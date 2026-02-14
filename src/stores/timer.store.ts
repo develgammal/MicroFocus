@@ -76,6 +76,15 @@ export const useTimerStore = defineStore('timer', () => {
     initialSnapshot = null
   }
 
+  function resetToBreak(intervalMinutes: number): void {
+    mode.value = TimerMode.Break
+    isRunning.value = false
+    breakElapsed.value = 0
+    timeLeft.value = intervalMinutes * 60
+    startTime = null
+    initialSnapshot = null
+  }
+
   function getBreakDurationMinutes(): number {
     return breakElapsed.value / 60
   }
@@ -101,6 +110,7 @@ export const useTimerStore = defineStore('timer', () => {
     tick,
     startBreak,
     resetToFocus,
+    resetToBreak,
     getBreakDurationMinutes,
     hasBeenPaused,
   }

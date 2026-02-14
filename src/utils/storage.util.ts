@@ -1,11 +1,14 @@
-import { SoundscapeKey } from '@/interfaces'
 import type { IPersistedState } from '@/interfaces'
 
-const APP_STORAGE_KEY = 'microfocus_v1'
+const STORAGE_KEY = 'microfocus_v1'
+const LEGACY_KEY = 'focusFlowData_v6'
 
+/**
+ * Load persisted state from localStorage
+ */
 export function loadFromStorage(): IPersistedState | null {
   try {
-    const raw = localStorage.getItem(APP_STORAGE_KEY)
+    const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     return JSON.parse(raw) as IPersistedState
   } catch {
@@ -13,51 +16,63 @@ export function loadFromStorage(): IPersistedState | null {
   }
 }
 
+/**
+ * Save state to localStorage
+ */
 export function saveToStorage(data: IPersistedState): void {
   try {
-    localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(data))
-  } catch {
-    // Storage quota exceeded — silently fail
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch (err) {
+    console.error('Failed to save to localStorage:', err)
   }
 }
 
+/**
+ * Clear all app data from localStorage
+ */
 export function clearStorage(): void {
-  localStorage.removeItem(APP_STORAGE_KEY)
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(LEGACY_KEY)
+  } catch (err) {
+    console.error('Failed to clear localStorage:', err)
+  }
 }
 
 /**
- * Migrate from the old proof-of-concept storage key.
- * Returns the old history data if found, then removes the old key.
+ * Migrate old POC data format to new structure
  */
 export function migrateFromLegacy(): IPersistedState | null {
-  const LEGACY_KEY = 'focusFlowData_v6'
   try {
     const raw = localStorage.getItem(LEGACY_KEY)
     if (!raw) return null
-    const parsed = JSON.parse(raw) as Record<string, unknown>
 
+    const legacy = JSON.parse(raw)
+    if (!legacy || typeof legacy !== 'object') return null
+
+    // Map legacy structure to new IPersistedState
     const migrated: IPersistedState = {
-      history: Array.isArray(parsed['history']) ? parsed['history'] : [],
       settings: {
-        intervalMinutes:
-          typeof parsed['intervalMinutes'] === 'number' ? parsed['intervalMinutes'] : 25,
-        soundRepeatSeconds:
-          typeof parsed['soundRepeatSeconds'] === 'number' ? parsed['soundRepeatSeconds'] : 5,
-        maxRepetitionSeconds:
-          typeof parsed['maxRepetitionSeconds'] === 'number' ? parsed['maxRepetitionSeconds'] : 30,
-        soundPreference:
-          typeof parsed['soundPreference'] === 'string'
-            ? (parsed['soundPreference'] as SoundscapeKey)
-            : SoundscapeKey.Gong,
-        quote: typeof parsed['quote'] === 'string' ? parsed['quote'] : '',
-        voiceURI: typeof parsed['voiceURI'] === 'string' ? parsed['voiceURI'] : '',
-        darkMode: typeof parsed['darkMode'] === 'boolean' ? parsed['darkMode'] : false,
+        intervalMinutes: legacy.intervalMinutes ?? 25,
+        maxRepetitionSeconds: legacy.maxRepetitionSeconds ?? 30,
+        soundPreference: legacy.soundPreference ?? 'gong',
+        soundRepeatSeconds: legacy.soundRepetitionSeconds ?? 5,
+        quote: legacy.quote ?? '',
+        voiceURI: legacy.voiceURI ?? '',
+        darkMode: false,
       },
+      history: Array.isArray(legacy.sessions) ? legacy.sessions : [],
     }
 
+    // Save migrated data in new format
+    saveToStorage(migrated)
+
+    // Remove legacy key
     localStorage.removeItem(LEGACY_KEY)
+
     return migrated
-  } catch {
+  } catch (err) {
+    console.error('Failed to migrate legacy storage:', err)
     return null
   }
 }

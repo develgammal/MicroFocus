@@ -1,64 +1,51 @@
-import { ref, onBeforeUnmount } from 'vue'
-
-type TickCallback = () => void
+import { onBeforeUnmount } from 'vue'
+import type { TimerWorkerMessage } from '@/interfaces'
 
 /**
- * Composable that manages the Web Worker for the timer.
- * Uses Vite's native Worker syntax for proper TypeScript bundling.
+ * Composable to manage the Web Worker for timer ticks.
+ * Uses Vite's native Worker support with `?worker` suffix.
  */
 export function useTimerWorker() {
-  const isWorkerRunning = ref(false)
   let worker: Worker | null = null
-  let tickCallback: TickCallback | null = null
-
-  function ensureWorker(): Worker {
-    if (!worker) {
-      worker = new Worker(new URL('../workers/timer.worker.ts', import.meta.url), {
-        type: 'module',
-      })
-      worker.onmessage = (e: MessageEvent<string>) => {
-        if (e.data === 'tick' && tickCallback) {
-          tickCallback()
-        }
-      }
-    }
-    return worker
-  }
+  let tickCallback: (() => void) | null = null
 
   function startWorker(): void {
-    const w = ensureWorker()
-    w.postMessage('start')
-    isWorkerRunning.value = true
+    if (worker) return
+
+    // Vite supports importing workers with ?worker suffix
+    worker = new Worker(new URL('../workers/timer.worker.ts', import.meta.url), {
+      type: 'module',
+    })
+
+    worker.onmessage = (e: MessageEvent<TimerWorkerMessage>) => {
+      const data = e.data
+      if (data === 'tick' && tickCallback) {
+        tickCallback()
+      }
+    }
+
+    worker.postMessage('start')
   }
 
   function stopWorker(): void {
     if (worker) {
       worker.postMessage('stop')
-    }
-    isWorkerRunning.value = false
-  }
-
-  function onTick(callback: TickCallback): void {
-    tickCallback = callback
-  }
-
-  function terminateWorker(): void {
-    stopWorker()
-    if (worker) {
       worker.terminate()
       worker = null
     }
   }
 
+  function onTick(callback: () => void): void {
+    tickCallback = callback
+  }
+
   onBeforeUnmount(() => {
-    terminateWorker()
+    stopWorker()
   })
 
   return {
-    isWorkerRunning,
     startWorker,
     stopWorker,
     onTick,
-    terminateWorker,
   }
 }

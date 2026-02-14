@@ -9,7 +9,7 @@ const { isDark, toggle } = useTheme()
 <template>
   <button
     :aria-label="t('a11y.toggleDarkMode')"
-    class="p-2 rounded-lg text-text-muted hover:text-primary transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-primary"
+    class="p-2 rounded-lg text-text-muted hover:text-primary transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-primary cursor-pointer"
     @click="toggle"
   >
     <!-- Sun Icon (shown in dark mode) -->

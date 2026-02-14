@@ -31,7 +31,7 @@ function getScoreColorClasses(score: number): string {
     :aria-label="t('a11y.scoreButton', { score: props.score })"
     :class="[
       'w-10 h-10 md:w-12 md:h-12 rounded-full border-2 font-bold',
-      'transition-all duration-200 hover:scale-110 active:scale-95',
+      'transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer',
       'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
       'bg-surface',
       getScoreColorClasses(props.score),

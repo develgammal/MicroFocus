@@ -11,15 +11,8 @@ defineEmits<{
 </script>
 
 <template>
-  <header class="flex justify-between items-center mb-6 md:mb-8">
-    <h1 class="text-2xl font-light tracking-wide text-text-muted">
-      {{ t('common.appTagline')
-      }}<span class="font-bold text-primary">{{ t('common.appTaglineBold') }}</span>
-    </h1>
-
-    <div class="flex items-center gap-1">
-      <ThemeToggle />
-
+  <header class="flex justify-between items-center mb-4 sm:mb-6 md:mb-8 gap-2">
+    <div class="flex items-center gap-1 flex-shrink-0">
       <IconButton :ariaLabel="t('a11y.openSettings')" @click="$emit('toggleSettings')">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -43,6 +36,13 @@ defineEmits<{
           />
         </svg>
       </IconButton>
+
+      <ThemeToggle />
     </div>
+
+    <h1 class="text-lg sm:text-xl md:text-2xl font-light tracking-wide text-text-muted truncate">
+      {{ t('common.appTagline')
+      }}<span class="font-bold text-primary">{{ t('common.appTaglineBold') }}</span>
+    </h1>
   </header>
 </template>

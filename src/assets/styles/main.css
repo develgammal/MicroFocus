@@ -225,3 +225,34 @@ body {
 .break-mode {
   background-color: var(--color-secondary-soft);
 }
+
+/*
+ * Number input styling - hide spinners and use custom if needed
+ */
+/* Hide number input spinners completely */
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/*
+ * Slide-left transition for settings panel
+ */
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-left-enter-from {
+  transform: translateX(-100%);
+}
+
+.slide-left-leave-to {
+  transform: translateX(-100%);
+}

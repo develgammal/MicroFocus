@@ -1,15 +1,23 @@
-let timerInterval: ReturnType<typeof setInterval> | null = null
+import type { TimerWorkerCommand, TimerWorkerMessage } from '@/interfaces'
 
-self.onmessage = function (e: MessageEvent<'start' | 'stop'>) {
-  if (e.data === 'start') {
-    if (timerInterval) clearInterval(timerInterval)
-    timerInterval = setInterval(() => {
-      self.postMessage('tick')
+let intervalId: ReturnType<typeof setInterval> | null = null
+
+self.onmessage = (e: MessageEvent<TimerWorkerCommand>) => {
+  const command = e.data
+
+  if (command === 'start') {
+    if (intervalId) return
+    intervalId = setInterval(() => {
+      const message: TimerWorkerMessage = 'tick'
+      self.postMessage(message)
     }, 1000)
-  } else if (e.data === 'stop') {
-    if (timerInterval) {
-      clearInterval(timerInterval)
-      timerInterval = null
+  } else if (command === 'stop') {
+    if (intervalId) {
+      clearInterval(intervalId)
+      intervalId = null
     }
   }
 }
+
+// Prevent errors due to external TS compilation scope
+export {}

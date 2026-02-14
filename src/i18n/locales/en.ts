@@ -6,6 +6,7 @@ export default {
     defaultVoice: 'Default Browser Voice',
     confirm: 'Confirm',
     cancel: 'Cancel',
+    close: 'Close',
   },
   timer: {
     focusSession: 'Focus Session',
@@ -14,6 +15,8 @@ export default {
     pause: 'Pause',
     resumeFocus: 'Resume Focus',
     endBreak: 'End Break',
+    resumeSession: 'Resume Session',
+    endSession: 'End Session',
   },
   rating: {
     sessionComplete: 'Session Complete',

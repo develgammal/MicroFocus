@@ -11,26 +11,39 @@ const settingsStore = useSettingsStore()
 
 defineEmits<{
   toggle: []
+  endSession: []
 }>()
 
-const buttonLabel = computed(() => {
-  if (timerStore.isBreak) return t('timer.endBreak')
-  if (timerStore.isRunning) return t('timer.pause')
+const mainButtonLabel = computed(() => {
+  if (timerStore.isBreak) return t('timer.resumeSession')
+  if (timerStore.isRunning) return t('rating.takeBreak')
   if (timerStore.hasBeenPaused(settingsStore.intervalMinutes)) return t('timer.resumeFocus')
   return t('timer.startFocus')
 })
 
-const buttonVariant = computed<'primary' | 'secondary' | 'accent'>(() => {
+const mainButtonVariant = computed<'primary' | 'secondary' | 'accent' | 'ghost'>(() => {
   if (timerStore.isBreak) return 'secondary'
-  if (timerStore.isRunning) return 'accent'
+  if (timerStore.isRunning) return 'ghost'
   return 'primary'
+})
+
+const showEndSessionButton = computed(() => {
+  return timerStore.isRunning || timerStore.isBreak
 })
 </script>
 
 <template>
-  <div class="flex justify-center mt-4 md:mt-6">
-    <BaseButton :variant="buttonVariant" size="lg" @click="$emit('toggle')">
-      {{ buttonLabel }}
+  <div class="flex justify-center gap-3 mt-4 md:mt-6">
+    <BaseButton :variant="mainButtonVariant" size="lg" @click="$emit('toggle')">
+      {{ mainButtonLabel }}
+    </BaseButton>
+    <BaseButton
+      v-if="showEndSessionButton"
+      variant="accent"
+      size="lg"
+      @click="$emit('endSession')"
+    >
+      {{ t('timer.endSession') }}
     </BaseButton>
   </div>
 </template>

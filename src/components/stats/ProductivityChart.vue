@@ -28,7 +28,7 @@ const chartData = computed<ChartData<'line'>>(() => {
       {
         label: t('chart.focus'),
         data: data.map((d) => d.value),
-        borderColor: 'var(--color-chart-line)',
+        borderColor: '#059669',
         backgroundColor: 'transparent',
         borderWidth: 2,
         tension: 0.4,
@@ -37,7 +37,7 @@ const chartData = computed<ChartData<'line'>>(() => {
           borderColor: (ctx) => {
             const p0 = ctx.p0.parsed.y
             const p1 = ctx.p1.parsed.y
-            return p0 === 0 || p1 === 0 ? 'var(--color-chart-break)' : 'var(--color-chart-line)'
+            return p0 === 0 || p1 === 0 ? '#94a3b8' : '#059669'
           },
           borderDash: (ctx) => {
             const p0 = ctx.p0.parsed.y
@@ -47,7 +47,7 @@ const chartData = computed<ChartData<'line'>>(() => {
         },
         pointBackgroundColor: (ctx) => {
           const value = ctx.dataset.data[ctx.dataIndex]
-          return value === 0 ? 'var(--color-chart-break)' : 'var(--color-chart-line)'
+          return value === 0 ? '#94a3b8' : '#059669'
         },
         pointRadius: 3,
       },
@@ -65,14 +65,14 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
       grid: { display: false },
       ticks: {
         callback: (val) => (val === 0 ? t('chart.break') : val),
-        color: 'var(--color-text-muted)',
+        color: '#059669',
       },
     },
     x: {
       grid: { display: false },
       ticks: {
         maxTicksLimit: 10,
-        color: 'var(--color-text-muted)',
+        color: '#059669',
       },
     },
   },
@@ -103,11 +103,11 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
 
     <div class="flex justify-center mt-2 gap-4 text-caption text-text-muted">
       <div class="flex items-center">
-        <span class="w-2 h-2 rounded-full bg-primary mr-1" />
+        <span class="w-2 h-2 rounded-full" style="background-color: #059669" />
         {{ t('chart.focus') }}
       </div>
       <div class="flex items-center">
-        <span class="w-2 h-2 rounded-full bg-border-strong mr-1" />
+        <span class="w-2 h-2 rounded-full" style="background-color: #94a3b8" />
         {{ t('chart.break') }}
       </div>
     </div>

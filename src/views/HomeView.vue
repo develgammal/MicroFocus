@@ -33,6 +33,7 @@ const { ensureContext } = useAudioSynth()
 
 const showSettings = ref(false)
 const showRating = ref(false)
+const isManualEndSession = ref(false)
 
 // --- Lifecycle ---
 onMounted(() => {
@@ -83,9 +84,36 @@ function handleToggleTimer(): void {
   }
 
   if (timerStore.isRunning) {
-    handlePause()
+    // If running, directly start break without rating (manual break)
+    timerStore.pause()
+    stopWorker()
+    stopAlarm()
+    handleStartBreak()
   } else {
+    // If not running, start the timer
     handleStart()
+  }
+}
+
+function handleEndSession(): void {
+  // Ensure AudioContext on first user interaction
+  ensureContext()
+
+  if (timerStore.isBreak) {
+    // During break: silently end break and reset to focus (no modal, no history)
+    stopWorker()
+    stopAlarm()
+    showRating.value = false
+    timerStore.resetToFocus(settingsStore.intervalMinutes)
+    announce(t('a11y.focusModeActive'))
+  } else {
+    // During focus: stop timer and show rating to save partial session
+    stopWorker()
+    stopAlarm()
+    isManualEndSession.value = true
+    showRating.value = true
+    timerStore.pause()
+    announce(t('a11y.timerCompleted'))
   }
 }
 
@@ -103,6 +131,7 @@ function handlePause(): void {
 
 function handleTimerComplete(): void {
   stopWorker()
+  isManualEndSession.value = false
   showRating.value = true
   announce(t('a11y.timerCompleted'))
 
@@ -130,15 +159,22 @@ function handleScore(score: number): void {
   settingsStore.persistAll()
   announce(t('a11y.sessionRated', { score }))
 
-  // Reset and auto-start next session
-  timerStore.resetToFocus(settingsStore.intervalMinutes)
-  handleStart()
+  if (isManualEndSession.value) {
+    // Manual end: reset to idle, don't auto-start
+    timerStore.resetToFocus(settingsStore.intervalMinutes)
+    isManualEndSession.value = false
+  } else {
+    // Natural completion: reset and auto-start next session
+    timerStore.resetToFocus(settingsStore.intervalMinutes)
+    handleStart()
+  }
 }
 
 function handleStartBreak(): void {
   stopAlarm()
   showRating.value = false
 
+  // Don't save an incomplete focus session when manually taking break
   timerStore.startBreak()
   timerStore.start()
   startWorker()
@@ -172,18 +208,29 @@ function handleSettingsChanged(): void {
 
 <template>
   <div
-    class="min-h-screen flex flex-col items-center p-4 transition-colors duration-500"
+    class="min-h-screen flex flex-col items-center px-3 py-4 sm:px-4 md:px-6 lg:px-8 transition-colors duration-500"
     :class="timerStore.isBreak ? 'break-mode' : ''"
   >
-    <BaseCard class="w-full max-w-2xl mt-4 md:mt-10">
+    <BaseCard class="w-full max-w-4xl min-w-[320px] mt-4 md:mt-10">
       <AppHeader @toggle-settings="showSettings = !showSettings" />
 
-      <SettingsPanel v-if="showSettings" @settings-changed="handleSettingsChanged" />
+      <Transition name="slide-left">
+        <SettingsPanel
+          v-if="showSettings"
+          @settings-changed="handleSettingsChanged"
+          @close="showSettings = false"
+        />
+      </Transition>
 
       <TimerDisplay />
-      <TimerControls @toggle="handleToggleTimer" />
+      <TimerControls @toggle="handleToggleTimer" @end-session="handleEndSession" />
 
-      <RatingOverlay v-if="showRating" @score="handleScore" @break="handleStartBreak" />
+      <RatingOverlay
+        v-if="showRating"
+        :show-break-option="!isManualEndSession"
+        @score="handleScore"
+        @break="handleStartBreak"
+      />
 
       <ProductivityChart />
     </BaseCard>

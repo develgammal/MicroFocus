@@ -26,7 +26,7 @@ defineEmits<{
     :disabled="disabled"
     :aria-label="ariaLabel"
     :class="[
-      'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2',
+      'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer',
       {
         // Sizes
         'px-4 py-1.5 text-sm': size === 'sm',
