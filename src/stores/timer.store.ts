@@ -90,6 +90,12 @@ export const useTimerStore = defineStore('timer', () => {
     return breakElapsed.value / TIMER_CONSTANTS.SECONDS_PER_MINUTE
   }
 
+  function getFocusDurationMinutes(intervalMinutes: number): number {
+    const totalSeconds = intervalMinutes * TIMER_CONSTANTS.SECONDS_PER_MINUTE
+    const elapsedSeconds = totalSeconds - timeLeft.value
+    return elapsedSeconds / TIMER_CONSTANTS.SECONDS_PER_MINUTE
+  }
+
   function hasBeenPaused(intervalMinutes: number): boolean {
     return timeLeft.value < intervalMinutes * TIMER_CONSTANTS.SECONDS_PER_MINUTE
   }
@@ -113,6 +119,7 @@ export const useTimerStore = defineStore('timer', () => {
     resetToFocus,
     resetToBreak,
     getBreakDurationMinutes,
+    getFocusDurationMinutes,
     hasBeenPaused,
   }
 })

@@ -25,6 +25,7 @@ const sessionManager = useSessionManager()
 const {
   showRating,
   isManualEndSession,
+  actualSessionDuration,
   initializeTimerTick,
   handleToggleTimer,
   handleEndSession,
@@ -89,6 +90,7 @@ watch(
       <RatingOverlay
         v-if="showRating"
         :show-break-option="!isManualEndSession"
+        :session-duration-minutes="actualSessionDuration"
         @score="handleScore"
         @break="handleStartBreak"
       />

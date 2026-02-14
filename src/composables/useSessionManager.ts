@@ -19,6 +19,7 @@ import type { IFocusSession, IBreakSession } from '@/interfaces'
 export interface ISessionManagerState {
   showRating: boolean
   isManualEndSession: boolean
+  actualSessionDuration: number
 }
 
 export function useSessionManager() {
@@ -33,6 +34,7 @@ export function useSessionManager() {
   // State
   const showRating = ref(false)
   const isManualEndSession = ref(false)
+  const actualSessionDuration = ref(0)
 
   /**
    * Initializes timer tick handler
@@ -121,10 +123,13 @@ export function useSessionManager() {
    * Ends focus session early with rating
    */
   function handlePartialSessionEnd(): void {
+    // Do one final tick to ensure accurate time
+    timerStore.tick()
+    timerStore.pause()
     stopAllTimerActivity()
     isManualEndSession.value = true
+    actualSessionDuration.value = timerStore.getFocusDurationMinutes(settingsStore.intervalMinutes)
     showRating.value = true
-    timerStore.pause()
     announce(t('a11y.timerCompleted'))
   }
 
@@ -134,6 +139,7 @@ export function useSessionManager() {
   function handleTimerComplete(): void {
     stopWorker()
     isManualEndSession.value = false
+    actualSessionDuration.value = settingsStore.intervalMinutes
     showRating.value = true
     announce(t('a11y.timerCompleted'))
 
@@ -158,7 +164,7 @@ export function useSessionManager() {
       type: 'focus',
       score,
       timestamp: currentTimestamp(),
-      duration: settingsStore.intervalMinutes,
+      duration: actualSessionDuration.value,
     }
 
     historyStore.addSession(entry)
@@ -237,6 +243,7 @@ export function useSessionManager() {
     // State
     showRating,
     isManualEndSession,
+    actualSessionDuration,
     // Initialization
     initializeTimerTick,
     // Actions

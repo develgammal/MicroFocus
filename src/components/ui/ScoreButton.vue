@@ -24,20 +24,37 @@ function getScoreColorClasses(score: number): string {
     return 'border-score-mid-high text-score-mid-high hover:bg-score-mid-high hover:text-text-inverse'
   return 'border-score-high text-score-high hover:bg-score-high hover:text-text-inverse'
 }
+
+function getScoreEmoji(score: number): string {
+  const emojiMap: Record<number, string> = {
+    1: '😫',
+    2: '😞',
+    3: '😕',
+    4: '🙁',
+    5: '😐',
+    6: '🙂',
+    7: '😊',
+    8: '😃',
+    9: '😄',
+    10: '🤩'
+  }
+  return emojiMap[score] || '😐'
+}
 </script>
 
 <template>
   <button
     :aria-label="t('a11y.scoreButton', { score: props.score })"
     :class="[
-      'w-10 h-10 md:w-12 md:h-12 rounded-full border-2 font-bold',
+      'w-16 h-16 md:w-20 md:h-20 rounded-full border-2 font-bold',
       'transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer',
       'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-      'bg-surface',
+      'bg-surface flex flex-col items-center justify-center',
       getScoreColorClasses(props.score),
     ]"
     @click="$emit('select', props.score)"
   >
-    {{ props.score }}
+    <span class="text-2xl md:text-3xl leading-none mb-0.5">{{ getScoreEmoji(props.score) }}</span>
+    <span class="text-xs md:text-sm">{{ props.score }}</span>
   </button>
 </template>

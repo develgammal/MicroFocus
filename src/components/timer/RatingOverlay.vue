@@ -7,6 +7,7 @@ const { t } = useI18n()
 
 defineProps<{
   showBreakOption?: boolean
+  sessionDurationMinutes?: number
 }>()
 
 defineEmits<{
@@ -28,7 +29,10 @@ const scores = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       {{ t('rating.sessionComplete') }}
     </h2>
     <p class="text-body text-text-muted mb-6">
-      {{ t('rating.rateOrBreak') }}
+      {{ sessionDurationMinutes
+        ? t('rating.rateProductivity', { duration: Math.round(sessionDurationMinutes) })
+        : t('rating.rateOrBreak')
+      }}
     </p>
 
     <div class="grid grid-cols-5 gap-3 mb-6">

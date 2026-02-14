@@ -20,6 +20,7 @@ export default {
   },
   rating: {
     sessionComplete: 'Session Complete',
+    rateProductivity: 'How do you feel about your productivity in the last {duration} mins?',
     rateOrBreak: 'Rate your focus or take a break.',
     takeBreak: 'Take a Break',
     breakTimeTooltip: 'Productivity: {score}',
