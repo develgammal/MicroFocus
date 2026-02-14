@@ -70,7 +70,6 @@ export default {
     breakModeActive: 'Break mode active',
     sessionRated: 'Session rated {score} out of 10',
     timerStarted: 'Timer started',
-    timerPaused: 'Timer paused',
     timerCompleted: 'Focus session completed',
   },
 }

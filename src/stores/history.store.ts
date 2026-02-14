@@ -2,8 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { ISessionEntry, IFocusSession, IChartDataPoint } from '@/interfaces'
 import { formatTotalWork } from '@/utils/time.util'
-
-const MAX_HISTORY_ITEMS = 1000
+import { STORAGE_CONSTANTS } from '@/constants/app.constants'
 
 export const useHistoryStore = defineStore('history', () => {
   // --- State ---
@@ -52,8 +51,9 @@ export const useHistoryStore = defineStore('history', () => {
   }
 
   function trimHistory(): void {
-    if (sessions.value.length > MAX_HISTORY_ITEMS) {
-      sessions.value = sessions.value.slice(sessions.value.length - MAX_HISTORY_ITEMS)
+    const maxEntries = STORAGE_CONSTANTS.MAX_HISTORY_ENTRIES
+    if (sessions.value.length > maxEntries) {
+      sessions.value = sessions.value.slice(sessions.value.length - maxEntries)
     }
   }
 

@@ -4,12 +4,18 @@ import { SoundscapeKey } from '@/interfaces'
 import type { IAppSettings } from '@/interfaces'
 import { loadFromStorage, saveToStorage, migrateFromLegacy } from '@/utils/storage.util'
 import { useHistoryStore } from './history.store'
+import { TIMER_CONSTANTS, SOUND_CONSTANTS } from '@/constants/app.constants'
+import {
+  validateInterval,
+  validateSoundRepeat,
+  validateMaxRepetition,
+} from '@/utils/validation.util'
 
 export const useSettingsStore = defineStore('settings', () => {
   // --- State ---
-  const intervalMinutes = ref(25)
-  const soundRepeatSeconds = ref(5)
-  const maxRepetitionSeconds = ref(30)
+  const intervalMinutes = ref<number>(TIMER_CONSTANTS.DEFAULT_INTERVAL_MINUTES)
+  const soundRepeatSeconds = ref<number>(SOUND_CONSTANTS.DEFAULT_REPEAT_SECONDS)
+  const maxRepetitionSeconds = ref<number>(SOUND_CONSTANTS.DEFAULT_MAX_SECONDS)
   const soundPreference = ref<SoundscapeKey>(SoundscapeKey.Gong)
   const quote = ref('')
   const voiceURI = ref('')
@@ -64,18 +70,15 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   function updateInterval(value: number): void {
-    const v = parseFloat(String(value))
-    intervalMinutes.value = isNaN(v) || v < 0.1 ? 0.1 : v
+    intervalMinutes.value = validateInterval(value)
   }
 
   function updateSoundRepeat(value: number): void {
-    const v = parseFloat(String(value))
-    soundRepeatSeconds.value = isNaN(v) || v < 2 ? 2 : v
+    soundRepeatSeconds.value = validateSoundRepeat(value)
   }
 
   function updateMaxRepetition(value: number): void {
-    const v = parseFloat(String(value))
-    maxRepetitionSeconds.value = isNaN(v) || v < 5 ? 5 : v
+    maxRepetitionSeconds.value = validateMaxRepetition(value)
   }
 
   // Auto-persist on every setting change
