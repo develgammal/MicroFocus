@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Line } from 'vue-chartjs'
 import {
@@ -20,20 +20,28 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 const { t } = useI18n()
 const historyStore = useHistoryStore()
 
+type ViewMode = 'hourly' | 'daily'
+const viewMode = ref<ViewMode>('hourly')
+
+function toggleView(): void {
+  viewMode.value = viewMode.value === 'hourly' ? 'daily' : 'hourly'
+}
+
 const chartData = computed<ChartData<'line'>>(() => {
-  const data = historyStore.chartData
+  const data = viewMode.value === 'hourly' ? historyStore.chartData : historyStore.dailyChartData
+
   return {
     labels: data.map((d) => d.label),
     datasets: [
       {
-        label: t('chart.focus'),
+        label: viewMode.value === 'hourly' ? t('chart.focus') : t('chart.viewDaily'),
         data: data.map((d) => d.value),
         borderColor: '#059669',
         backgroundColor: 'transparent',
         borderWidth: 2,
         tension: 0.4,
         fill: true,
-        segment: {
+        segment: viewMode.value === 'hourly' ? {
           borderColor: (ctx) => {
             const p0 = ctx.p0.parsed.y
             const p1 = ctx.p1.parsed.y
@@ -44,10 +52,10 @@ const chartData = computed<ChartData<'line'>>(() => {
             const p1 = ctx.p1.parsed.y
             return p0 === 0 || p1 === 0 ? [5, 5] : undefined
           },
-        },
+        } : undefined,
         pointBackgroundColor: (ctx) => {
           const value = ctx.dataset.data[ctx.dataIndex]
-          return value === 0 ? '#94a3b8' : '#059669'
+          return viewMode.value === 'hourly' && value === 0 ? '#94a3b8' : '#059669'
         },
         pointRadius: 3,
       },
@@ -64,7 +72,8 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
       max: 10,
       grid: { display: false },
       ticks: {
-        callback: (val) => (val === 0 ? t('chart.break') : val),
+        callback: (val) =>
+          viewMode.value === 'hourly' && val === 0 ? t('chart.break') : val,
         color: '#059669',
       },
     },
@@ -81,7 +90,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
     tooltip: {
       callbacks: {
         label: (context) =>
-          context.raw === 0
+          viewMode.value === 'hourly' && context.raw === 0
             ? t('rating.breakLabel')
             : t('chart.productivity', { score: context.raw }),
       },
@@ -93,15 +102,43 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
 
 <template>
   <div class="mt-6 md:mt-8 border-t border-border pt-4 md:pt-6">
-    <h3 class="text-subheading text-text-muted mb-4">
-      {{ t('chart.productivityTrend') }}
-    </h3>
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-subheading text-text-muted">
+        {{ t('chart.productivityTrend') }}
+      </h3>
+      <div class="flex gap-1 bg-surface border border-border rounded-lg p-1">
+        <button
+          :class="[
+            'px-3 py-1 rounded text-caption font-medium transition-colors cursor-pointer',
+            viewMode === 'hourly'
+              ? 'bg-primary text-white'
+              : 'text-text-muted hover:text-text hover:bg-border/30',
+          ]"
+          @click="toggleView"
+          :aria-label="t('chart.toggleView')"
+        >
+          {{ t('chart.viewHourly') }}
+        </button>
+        <button
+          :class="[
+            'px-3 py-1 rounded text-caption font-medium transition-colors cursor-pointer',
+            viewMode === 'daily'
+              ? 'bg-primary text-white'
+              : 'text-text-muted hover:text-text hover:bg-border/30',
+          ]"
+          @click="toggleView"
+          :aria-label="t('chart.toggleView')"
+        >
+          {{ t('chart.viewDaily') }}
+        </button>
+      </div>
+    </div>
 
     <div class="relative h-48 w-full">
       <Line :data="chartData" :options="chartOptions" />
     </div>
 
-    <div class="flex justify-center mt-2 gap-4 text-caption text-text-muted">
+    <div v-if="viewMode === 'hourly'" class="flex justify-center mt-2 gap-4 text-caption text-text-muted">
       <div class="flex items-center">
         <span class="w-2 h-2 rounded-full" style="background-color: #059669" />
         {{ t('chart.focus') }}

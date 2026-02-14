@@ -100,10 +100,10 @@ describe('history.store', () => {
     ])
   })
 
-  it('trims history to 1000 items', () => {
+  it('trims history to 100 items (visual limit)', () => {
     const store = useHistoryStore()
 
-    const entries: IFocusSession[] = Array.from({ length: 1005 }, (_, i) => ({
+    const entries: IFocusSession[] = Array.from({ length: 150 }, (_, i) => ({
       id: i,
       type: 'focus' as const,
       score: 5,
@@ -112,7 +112,7 @@ describe('history.store', () => {
     }))
 
     store.loadSessions(entries)
-    expect(store.sessions).toHaveLength(1000)
+    expect(store.sessions).toHaveLength(100)
   })
 
   it('clears history', () => {

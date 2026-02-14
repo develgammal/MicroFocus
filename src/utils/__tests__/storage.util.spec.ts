@@ -45,6 +45,7 @@ describe('storage.util', () => {
             duration: 25,
           },
         ],
+        dailyAverages: [],
         settings: {
           intervalMinutes: 25,
           soundRepeatSeconds: 5,
@@ -70,6 +71,7 @@ describe('storage.util', () => {
     it('removes stored data', () => {
       const data: IPersistedState = {
         history: [],
+        dailyAverages: [],
         settings: {
           intervalMinutes: 25,
           soundRepeatSeconds: 5,

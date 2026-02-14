@@ -37,7 +37,6 @@ export default {
     voice: 'Voice',
     clearHistory: 'Clear History',
     clearHistoryConfirm: 'Clear all history?',
-    storageNote: 'Storage: Auto-trims history >1000 items.',
   },
   stats: {
     avgScore: 'Avg Score',
@@ -47,6 +46,9 @@ export default {
   },
   chart: {
     productivityTrend: 'Productivity Trend',
+    viewHourly: 'Hourly',
+    viewDaily: 'Daily Avg',
+    toggleView: 'Toggle view mode',
     focus: 'Focus',
     break: 'Break',
     breakTime: 'Break Time',

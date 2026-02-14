@@ -174,10 +174,7 @@ function handleClearHistory(): void {
         </div>
 
         <!-- Footer -->
-        <div class="pt-4 border-t border-border flex justify-between items-center">
-          <span class="text-caption text-text-muted">
-            {{ t('settings.storageNote') }}
-          </span>
+        <div class="pt-4 border-t border-border flex justify-end items-center">
           <button
             class="text-caption font-medium text-danger hover:text-danger-hover transition-colors cursor-pointer"
             @click="handleClearHistory"

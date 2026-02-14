@@ -32,6 +32,12 @@ export interface IBreakSession {
 
 export type ISessionEntry = IFocusSession | IBreakSession
 
+export interface IDailyAverage {
+  readonly date: string // YYYY-MM-DD format
+  readonly avgScore: number
+  readonly sessionCount: number
+}
+
 export interface ITimerSettings {
   intervalMinutes: number
   soundRepeatSeconds: number
@@ -63,6 +69,7 @@ export interface IAlarmState {
 
 export interface IPersistedState {
   history: ISessionEntry[]
+  dailyAverages: IDailyAverage[]
   settings: IAppSettings
 }
 

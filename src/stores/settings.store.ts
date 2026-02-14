@@ -37,10 +37,13 @@ export const useSettingsStore = defineStore('settings', () => {
       voiceURI.value = s.voiceURI
       darkMode.value = s.darkMode
 
-      // Also load history if migrating
-      if (!saved && data.history.length > 0) {
-        const historyStore = useHistoryStore()
+      // Load history data
+      const historyStore = useHistoryStore()
+      if (data.history.length > 0) {
         historyStore.loadSessions(data.history)
+      }
+      if (data.dailyAverages && data.dailyAverages.length > 0) {
+        historyStore.loadDailyAverages(data.dailyAverages)
       }
     }
   }
@@ -49,6 +52,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const historyStore = useHistoryStore()
     saveToStorage({
       history: historyStore.sessions,
+      dailyAverages: historyStore.dailyAverages,
       settings: currentSettings(),
     })
   }

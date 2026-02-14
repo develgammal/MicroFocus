@@ -30,11 +30,17 @@ export const SOUND_CONSTANTS = {
 // Storage Configuration
 export const STORAGE_CONSTANTS = {
   /** Main storage key for persisted state */
-  STORAGE_KEY: 'focusFlowData_v7',
-  /** Legacy storage key for migration */
-  LEGACY_STORAGE_KEY: 'focusFlowData_v6',
-  /** Maximum number of history entries to keep (FIFO) */
-  MAX_HISTORY_ENTRIES: 1000,
+  STORAGE_KEY: 'focusFlowData_v8',
+  /** Legacy storage key for migration from v7 */
+  LEGACY_STORAGE_KEY_V7: 'focusFlowData_v7',
+  /** Legacy storage key for migration from v6 */
+  LEGACY_STORAGE_KEY_V6: 'focusFlowData_v6',
+  /** Maximum number of hourly session entries to keep (visual limit) */
+  MAX_HOURLY_SESSIONS: 100,
+  /** Maximum number of daily average entries to keep (visual limit) */
+  MAX_DAILY_AVERAGES: 60,
+  /** Storage capacity threshold in MB to trigger aggressive cleanup */
+  STORAGE_THRESHOLD_MB: 4,
 } as const
 
 // Application Metadata
