@@ -1,0 +1,24 @@
+<script setup lang="ts">
+interface Props {
+  padding?: 'sm' | 'md' | 'lg'
+}
+
+withDefaults(defineProps<Props>(), {
+  padding: 'md',
+})
+</script>
+
+<template>
+  <div
+    :class="[
+      'bg-surface rounded-2xl shadow-xl transition-colors duration-500 relative overflow-hidden',
+      {
+        'p-4': padding === 'sm',
+        'p-6 md:p-8': padding === 'md',
+        'p-8 md:p-10': padding === 'lg',
+      },
+    ]"
+  >
+    <slot />
+  </div>
+</template>

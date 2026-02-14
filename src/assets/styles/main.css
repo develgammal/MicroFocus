@@ -1,0 +1,227 @@
+@import 'tailwindcss';
+
+/*
+ * MicroFocus Design System
+ * -----------------------
+ * Zen-inspired, mindful colour palette with focus/break mode themes.
+ * All tokens consumed via var(--color-*) for seamless dark/light switching.
+ */
+
+@theme {
+  /* Primary — Focus mode (Indigo) */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-soft: #eef2ff;
+  --color-primary-muted: #818cf8;
+
+  /* Secondary — Break mode (Emerald) */
+  --color-secondary: #059669;
+  --color-secondary-hover: #047857;
+  --color-secondary-soft: #ecfdf5;
+  --color-secondary-muted: #34d399;
+
+  /* Accent — Pause / Warning (Amber) */
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+
+  /* Danger — Destructive actions (Red) */
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+
+  /* Text */
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --color-text-inverse: #ffffff;
+
+  /* Borders */
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  /* Score palette */
+  --color-score-low: #ef4444;
+  --color-score-mid-low: #f97316;
+  --color-score-mid: #eab308;
+  --color-score-mid-high: #22c55e;
+  --color-score-high: #10b981;
+
+  /* Chart */
+  --color-chart-line: #4f46e5;
+  --color-chart-break: #cbd5e1;
+  --color-chart-fill-start: rgba(79, 70, 229, 0.4);
+  --color-chart-fill-end: rgba(79, 70, 229, 0);
+
+  /* Typography */
+  --font-family-base: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Spacing scale */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/*
+ * Dark mode overrides
+ * Applied when .dark class is on <html>
+ */
+.dark {
+  --color-primary: #818cf8;
+  --color-primary-hover: #a5b4fc;
+  --color-primary-soft: #312e81;
+  --color-primary-muted: #6366f1;
+
+  --color-secondary: #34d399;
+  --color-secondary-hover: #6ee7b7;
+  --color-secondary-soft: #064e3b;
+  --color-secondary-muted: #10b981;
+
+  --color-accent: #fbbf24;
+  --color-accent-hover: #fcd34d;
+
+  --color-danger: #f87171;
+  --color-danger-hover: #fca5a5;
+
+  --color-surface: #1e293b;
+  --color-background: #0f172a;
+
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-inverse: #0f172a;
+
+  --color-border: #334155;
+  --color-border-strong: #475569;
+
+  --color-score-low: #f87171;
+  --color-score-mid-low: #fb923c;
+  --color-score-mid: #facc15;
+  --color-score-mid-high: #4ade80;
+  --color-score-high: #34d399;
+
+  --color-chart-line: #818cf8;
+  --color-chart-break: #475569;
+  --color-chart-fill-start: rgba(129, 140, 248, 0.4);
+  --color-chart-fill-end: rgba(129, 140, 248, 0);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+/*
+ * Base reset & global styles
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition:
+    background-color var(--transition-slow),
+    color var(--transition-slow);
+}
+
+/*
+ * Typography scale (mobile-first fluid)
+ */
+.text-display {
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.text-heading {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.text-subheading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.text-body {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/*
+ * Accessibility — WCAG compliant focus styles
+ */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/*
+ * Screen reader only utility
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/*
+ * Break mode body modifier
+ */
+.break-mode {
+  background-color: var(--color-secondary-soft);
+}
