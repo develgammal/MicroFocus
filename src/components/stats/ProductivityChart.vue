@@ -65,7 +65,11 @@ const segmentLabelPlugin: Plugin<'line'> = {
     const dataValues = dataset.data as number[]
     const sessionDurations = historyStore.sessions.map(s => s.duration)
 
-    dataValues.forEach((value, index) => {
+    for (let index = 0; index < dataValues.length; index++) {
+      const value = dataValues[index]
+
+      if (typeof value !== 'number') continue
+
       if (value > 0) {
         if (!currentSegment) {
           currentSegment = {
@@ -80,19 +84,21 @@ const segmentLabelPlugin: Plugin<'line'> = {
           currentSegment.scores.push(value)
           currentSegment.duration += sessionDurations[index] || 0
         }
-      } else if (currentSegment) {
-        // End of segment (break encountered)
-        currentSegment.avgScore =
-          currentSegment.scores.reduce((sum, s) => sum + s, 0) / currentSegment.scores.length
-        segments.push(currentSegment)
-        currentSegment = null
+      } else {
+        // Break encountered - close current segment if exists
+        if (currentSegment !== null) {
+          currentSegment.avgScore =
+            currentSegment.scores.reduce((sum: number, s: number) => sum + s, 0) / currentSegment.scores.length
+          segments.push(currentSegment)
+          currentSegment = null
+        }
       }
-    })
+    }
 
     // Add last segment if exists (no break after it)
-    if (currentSegment && currentSegment.scores.length > 1) {
+    if (currentSegment !== null && currentSegment.scores.length > 1) {
       currentSegment.avgScore =
-        currentSegment.scores.reduce((sum, s) => sum + s, 0) / currentSegment.scores.length
+        currentSegment.scores.reduce((sum: number, s: number) => sum + s, 0) / currentSegment.scores.length
       segments.push(currentSegment)
     }
 
@@ -121,6 +127,9 @@ const segmentLabelPlugin: Plugin<'line'> = {
       // Find the score at the middle point for positioning
       const midScore = dataValues[midIndex] || segment.avgScore
       const yScale = chart.scales.y
+
+      if (!yScale) return
+
       let baseY = yScale.getPixelForValue(midScore)
 
       // Add extra offset if the curve is near the edges
