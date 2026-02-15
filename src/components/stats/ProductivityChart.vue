@@ -11,6 +11,7 @@ import {
   Title,
   Tooltip,
   Filler,
+  type Plugin,
 } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js'
 import { useHistoryStore } from '@/stores/history.store'
@@ -23,9 +24,181 @@ const historyStore = useHistoryStore()
 type ViewMode = 'hourly' | 'daily'
 const viewMode = ref<ViewMode>('hourly')
 
+interface Segment {
+  startIndex: number
+  endIndex: number
+  scores: number[]
+  avgScore: number
+  duration: number // in minutes (assuming each data point = focus interval)
+}
+
+// Helper function to format duration
+function formatDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes} min${minutes !== 1 ? 's' : ''}`
+
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+
+  if (mins === 0) return `${hours}:00 hr${hours !== 1 ? 's' : ''}`
+
+  return `${hours}:${mins.toString().padStart(2, '0')} hrs`
+}
+
+// Custom plugin to draw segment labels
+const segmentLabelPlugin: Plugin<'line'> = {
+  id: 'segmentLabels',
+  afterDatasetsDraw(chart) {
+    const ctx = chart.ctx
+    const dataset = chart.data.datasets[0]
+    const meta = chart.getDatasetMeta(0)
+
+    if (!dataset || !meta || !meta.data.length) return
+
+    // Only show labels in hourly view
+    const isHourly = viewMode.value === 'hourly'
+    if (!isHourly) return
+
+    // Identify segments (continuous non-zero values separated by zeros/breaks)
+    const segments: Segment[] = []
+    let currentSegment: Segment | null = null
+
+    const dataValues = dataset.data as number[]
+    const sessionDurations = historyStore.sessions.map(s => s.duration)
+
+    dataValues.forEach((value, index) => {
+      if (value > 0) {
+        if (!currentSegment) {
+          currentSegment = {
+            startIndex: index,
+            endIndex: index,
+            scores: [value],
+            avgScore: value,
+            duration: sessionDurations[index] || 0,
+          }
+        } else {
+          currentSegment.endIndex = index
+          currentSegment.scores.push(value)
+          currentSegment.duration += sessionDurations[index] || 0
+        }
+      } else if (currentSegment) {
+        // End of segment (break encountered)
+        currentSegment.avgScore =
+          currentSegment.scores.reduce((sum, s) => sum + s, 0) / currentSegment.scores.length
+        segments.push(currentSegment)
+        currentSegment = null
+      }
+    })
+
+    // Add last segment if exists (no break after it)
+    if (currentSegment && currentSegment.scores.length > 1) {
+      currentSegment.avgScore =
+        currentSegment.scores.reduce((sum, s) => sum + s, 0) / currentSegment.scores.length
+      segments.push(currentSegment)
+    }
+
+    // Get color from CSS variables
+    const isDark = document.documentElement.classList.contains('dark')
+    const labelColor = isDark ? '#94a3b8' : '#64748b'
+
+    // Draw labels for each segment
+    segments.forEach(segment => {
+      // Skip if segment is too short (single point)
+      if (segment.startIndex === segment.endIndex) return
+
+      // Calculate middle point of segment
+      const midIndex = Math.floor((segment.startIndex + segment.endIndex) / 2)
+      const midPoint = meta.data[midIndex]
+
+      if (!midPoint) return
+
+      const x = midPoint.x
+
+      // Determine if label should be above or below based on average score
+      const isAbove = segment.avgScore <= 5
+      const offsetY = isAbove ? -20 : 20
+
+      // Calculate y position with safe distance from curve
+      // Find the score at the middle point for positioning
+      const midScore = dataValues[midIndex] || segment.avgScore
+      const yScale = chart.scales.y
+      let baseY = yScale.getPixelForValue(midScore)
+
+      // Add extra offset if the curve is near the edges
+      if (isAbove) {
+        // Check if we're too close to the top
+        const topEdge = chart.chartArea.top
+        if (baseY + offsetY - 15 < topEdge) {
+          // Place below instead
+          baseY = yScale.getPixelForValue(midScore)
+          const y = baseY + 20
+          drawLabel(ctx, x, y, segment, labelColor, false)
+        } else {
+          const y = baseY + offsetY
+          drawLabel(ctx, x, y, segment, labelColor, true)
+        }
+      } else {
+        // Check if we're too close to the bottom
+        const bottomEdge = chart.chartArea.bottom
+        if (baseY + offsetY + 15 > bottomEdge) {
+          // Place above instead
+          baseY = yScale.getPixelForValue(midScore)
+          const y = baseY - 20
+          drawLabel(ctx, x, y, segment, labelColor, true)
+        } else {
+          const y = baseY + offsetY
+          drawLabel(ctx, x, y, segment, labelColor, false)
+        }
+      }
+    })
+  }
+}
+
+// Helper function to draw a label
+function drawLabel(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  segment: Segment,
+  color: string,
+  isAbove: boolean
+): void {
+  const durationStr = formatDuration(segment.duration)
+  const scoreStr = segment.avgScore.toFixed(1)
+  const text = `${durationStr}, ${scoreStr}/10`
+
+  ctx.save()
+  ctx.font = '10px Inter, sans-serif'
+  ctx.fillStyle = color
+  ctx.textAlign = 'center'
+  ctx.textBaseline = isAbove ? 'bottom' : 'top'
+
+  // Add subtle background for readability
+  const metrics = ctx.measureText(text)
+  const padding = 3
+  const bgX = x - metrics.width / 2 - padding
+  const bgY = isAbove ? y - 12 - padding : y - padding
+  const bgWidth = metrics.width + padding * 2
+  const bgHeight = 12 + padding * 2
+
+  // Semi-transparent background
+  ctx.fillStyle = document.documentElement.classList.contains('dark')
+    ? 'rgba(15, 23, 42, 0.7)'
+    : 'rgba(248, 250, 252, 0.7)'
+  ctx.fillRect(bgX, bgY, bgWidth, bgHeight)
+
+  // Draw text
+  ctx.fillStyle = color
+  ctx.fillText(text, x, y)
+
+  ctx.restore()
+}
+
 function toggleView(): void {
   viewMode.value = viewMode.value === 'hourly' ? 'daily' : 'hourly'
 }
+
+// Register the custom plugin
+ChartJS.register(segmentLabelPlugin)
 
 const chartData = computed<ChartData<'line'>>(() => {
   const data = viewMode.value === 'hourly' ? historyStore.chartData : historyStore.dailyChartData

@@ -41,7 +41,7 @@ export default {
   stats: {
     avgScore: 'Avg Score',
     sessions: 'Sessions',
-    totalWork: 'Total Work',
+    totalWork: 'Total Work Today',
     noData: '-',
   },
   chart: {

@@ -36,32 +36,40 @@ describe('formatTime', () => {
 })
 
 describe('formatTotalWork', () => {
-  it('returns "0m" for zero minutes', () => {
-    expect(formatTotalWork(0)).toBe('0m')
+  it('returns "0 mins" for zero minutes', () => {
+    expect(formatTotalWork(0)).toBe('0 mins')
   })
 
-  it('returns "0m" for negative minutes', () => {
-    expect(formatTotalWork(-10)).toBe('0m')
+  it('returns "0 mins" for negative minutes', () => {
+    expect(formatTotalWork(-10)).toBe('0 mins')
   })
 
   it('returns minutes-only for sub-hour values', () => {
-    expect(formatTotalWork(45)).toBe('45m')
+    expect(formatTotalWork(45)).toBe('45 mins')
   })
 
   it('returns hours-only when minutes are exactly divisible', () => {
-    expect(formatTotalWork(120)).toBe('2h')
+    expect(formatTotalWork(120)).toBe('2 hrs')
   })
 
   it('returns combined hours and minutes', () => {
-    expect(formatTotalWork(135)).toBe('2h 15m')
+    expect(formatTotalWork(135)).toBe('2 hrs 15 mins')
   })
 
   it('handles fractional minutes by rounding', () => {
-    expect(formatTotalWork(0.3)).toBe('1m')
+    expect(formatTotalWork(0.3)).toBe('1 min')
   })
 
   it('handles 1 minute', () => {
-    expect(formatTotalWork(1)).toBe('1m')
+    expect(formatTotalWork(1)).toBe('1 min')
+  })
+
+  it('handles 1 hour', () => {
+    expect(formatTotalWork(60)).toBe('1 hr')
+  })
+
+  it('handles 1 hour 1 minute', () => {
+    expect(formatTotalWork(61)).toBe('1 hr 1 min')
   })
 })
 

@@ -145,6 +145,6 @@ describe('history.store', () => {
       })
     }
 
-    expect(store.totalWorkFormatted).toBe('1h 15m')
+    expect(store.totalWorkFormatted).toBe('1 hr 15 mins')
   })
 })

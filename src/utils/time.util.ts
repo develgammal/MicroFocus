@@ -10,17 +10,24 @@ export function formatTime(totalSeconds: number): string {
 
 /**
  * Format total minutes into a human-readable duration string.
- * e.g. 135 → "2h 15m", 45 → "45m", 0.5 → "1m"
+ * e.g. 135 → "2 hrs 15 mins", 45 → "45 mins", 0.5 → "1 min"
  */
 export function formatTotalWork(totalMinutes: number): string {
-  if (totalMinutes <= 0) return '0m'
+  if (totalMinutes <= 0) return '0 mins'
 
   const h = Math.floor(totalMinutes / 60)
   const m = Math.round(totalMinutes % 60)
 
-  if (h === 0) return `${m || 1}m`
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}m`
+  if (h === 0) {
+    const mins = m || 1
+    return mins === 1 ? '1 min' : `${mins} mins`
+  }
+  if (m === 0) {
+    return h === 1 ? '1 hr' : `${h} hrs`
+  }
+  const hrLabel = h === 1 ? 'hr' : 'hrs'
+  const minLabel = m === 1 ? 'min' : 'mins'
+  return `${h} ${hrLabel} ${m} ${minLabel}`
 }
 
 /**
