@@ -71,6 +71,9 @@ export function useAlarmLoop() {
       loopTimeout = setTimeout(executeStep, currentSilenceSeconds * 1000)
     } else if (nextAction === 'quote') {
       void speak(currentQuote, currentVoiceURI).then(() => {
+        // Check if alarm was stopped during speech
+        if (!isAlarming.value) return
+
         if (maxDurationReached) {
           stopAlarm()
         } else {

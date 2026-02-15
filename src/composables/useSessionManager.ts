@@ -415,6 +415,7 @@ export function useSessionManager() {
 
   /** User dismissed the break suggestion — continue working */
   function handleSuggestionDismiss(): void {
+    stopAlarm()
     breakSuggestion.value = null
     if (pendingAutoStart) {
       pendingAutoStart = false
