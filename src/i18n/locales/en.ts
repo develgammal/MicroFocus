@@ -39,9 +39,10 @@ export default {
     clearHistoryConfirm: 'Clear all history?',
   },
   stats: {
+    dailyStats: 'Daily Statistics:',
     avgScore: 'Avg Score',
     sessions: 'Sessions',
-    totalWork: 'Total Work Today',
+    totalProductivity: 'Total Productivity',
     noData: '-',
   },
   chart: {

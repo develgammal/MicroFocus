@@ -70,9 +70,10 @@ test.describe('Focus Session Flow', () => {
   })
 
   test('shows stats footer with initial values', async ({ page }) => {
+    await expect(page.getByText('Daily Statistics:')).toBeVisible()
     await expect(page.getByText('Avg Score')).toBeVisible()
     await expect(page.getByText('Sessions')).toBeVisible()
-    await expect(page.getByText('Total Work Today')).toBeVisible()
+    await expect(page.getByText('Total Productivity')).toBeVisible()
   })
 
   test('shows productivity chart section', async ({ page }) => {

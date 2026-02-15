@@ -34,10 +34,14 @@ interface Segment {
 
 // Helper function to format duration
 function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes} min${minutes !== 1 ? 's' : ''}`
+  const roundedMinutes = Math.round(minutes * 10) / 10
 
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
+  if (roundedMinutes < 60) {
+    return `${roundedMinutes} min${roundedMinutes !== 1 ? 's' : ''}`
+  }
+
+  const hours = Math.floor(roundedMinutes / 60)
+  const mins = Math.round(roundedMinutes % 60)
 
   if (mins === 0) return `${hours}:00 hr${hours !== 1 ? 's' : ''}`
 
