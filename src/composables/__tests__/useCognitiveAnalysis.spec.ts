@@ -257,7 +257,7 @@ describe('useCognitiveAnalysis', () => {
       const result = getFocusSessionsSinceLastBreak(sessions)
 
       expect(result).toHaveLength(1)
-      expect(result[0].score).toBe(7)
+      expect(result[0]?.score).toBe(7)
     })
 
     it('returns empty array for empty input', () => {
