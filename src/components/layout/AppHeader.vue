@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 import IconButton from '@/components/ui/IconButton.vue'
+import AppLogo from '@/components/ui/AppLogo.vue'
 
 const { t } = useI18n()
 
@@ -40,9 +41,14 @@ defineEmits<{
       <ThemeToggle />
     </div>
 
-    <h1 class="text-lg sm:text-xl md:text-2xl font-light tracking-wide text-text-muted truncate">
-      {{ t('common.appTagline')
-      }}<span class="font-bold text-primary">{{ t('common.appTaglineBold') }}</span>
+    <!-- App Name with integrated logo -->
+    <h1
+      class="text-lg sm:text-xl md:text-2xl font-light tracking-wide text-text-muted truncate flex items-center gap-0.5"
+    >
+      <span>{{ t('common.appTagline') }}</span
+      ><span class="font-bold text-primary inline-flex items-center"
+        >F<AppLogo class="h-[1.1em] w-[1.1em] inline-block mx-[-0.05em]" />cus</span
+      >
     </h1>
   </header>
 </template>

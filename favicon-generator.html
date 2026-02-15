@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Favicon Generator</title>
+</head>
+
+<body>
+    <h2>MicroFocus Favicon Generator</h2>
+    <canvas id="canvas" width="32" height="32"></canvas>
+    <br><br>
+    <button onclick="download()">Download as favicon.ico</button>
+    <p>Right-click the canvas and "Save Image As" -> save as favicon.ico in the public folder</p>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Background
+        ctx.fillStyle = '#4f46e5';
+        ctx.beginPath();
+        ctx.arc(16, 16, 16, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Outer ring
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(16, 16, 13, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Middle ring
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(16, 16, 9, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner circle
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(16, 16, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Center dot
+        ctx.fillStyle = '#4f46e5';
+        ctx.beginPath();
+        ctx.arc(16, 16, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Make canvas larger for visibility
+        canvas.style.width = '128px';
+        canvas.style.height = '128px';
+        canvas.style.imageRendering = 'pixelated';
+        canvas.style.border = '1px solid #ccc';
+
+        function download() {
+            canvas.toBlob(function (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'favicon.ico';
+                a.click();
+            });
+        }
+    </script>
+</body>
+
+</html>
