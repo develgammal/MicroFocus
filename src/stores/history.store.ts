@@ -11,6 +11,16 @@ export const useHistoryStore = defineStore('history', () => {
   const dailyAverages = ref<IDailyAverage[]>([])
   let midnightTimeout: ReturnType<typeof setTimeout> | null = null
 
+  // --- Cognitive fatigue detection state (in-memory only, resets on page load) ---
+  /** Score of the last focus session before the most recent break */
+  const lastPreBreakScore = ref<number | null>(null)
+  /** Duration of the most recent break in minutes */
+  const lastBreakDuration = ref<number | null>(null)
+  /** Whether the next post-break session should check for rebound */
+  const pendingReboundCheck = ref(false)
+  /** Recommended break minutes from the last break suggestion (for post-break recovery eval) */
+  const lastRecommendedBreakMinutes = ref<number | null>(null)
+
   // --- Getters ---
   const focusSessions = computed<IFocusSession[]>(() =>
     sessions.value.filter((s): s is IFocusSession => s.type === 'focus'),
@@ -77,6 +87,10 @@ export const useHistoryStore = defineStore('history', () => {
   function clearHistory(): void {
     sessions.value = []
     dailyAverages.value = []
+    lastPreBreakScore.value = null
+    lastBreakDuration.value = null
+    pendingReboundCheck.value = false
+    lastRecommendedBreakMinutes.value = null
     if (midnightTimeout) {
       clearTimeout(midnightTimeout)
       midnightTimeout = null
@@ -167,10 +181,40 @@ export const useHistoryStore = defineStore('history', () => {
   // Initialize midnight scheduler on store creation
   scheduleMidnightAggregation()
 
+  // --- Cognitive fatigue helpers ---
+
+  /** Save the pre-break score before a break starts */
+  function savePreBreakState(score: number): void {
+    lastPreBreakScore.value = score
+  }
+
+  /** Save break duration when break ends, flag rebound check */
+  function saveBreakDuration(duration: number): void {
+    lastBreakDuration.value = Math.round(duration)
+    pendingReboundCheck.value = true
+  }
+
+  /** Save the recommended break duration when user accepts a break suggestion */
+  function saveRecommendedBreak(minutes: number): void {
+    lastRecommendedBreakMinutes.value = minutes
+  }
+
+  /** Clear pre-break state after rebound is shown or dismissed */
+  function clearPreBreakState(): void {
+    lastPreBreakScore.value = null
+    lastBreakDuration.value = null
+    pendingReboundCheck.value = false
+    lastRecommendedBreakMinutes.value = null
+  }
+
   return {
     // State
     sessions,
     dailyAverages,
+    lastPreBreakScore,
+    lastBreakDuration,
+    pendingReboundCheck,
+    lastRecommendedBreakMinutes,
     // Getters
     focusSessions,
     sessionCount,
@@ -186,5 +230,9 @@ export const useHistoryStore = defineStore('history', () => {
     loadDailyAverages,
     clearHistory,
     scheduleMidnightAggregation,
+    savePreBreakState,
+    saveBreakDuration,
+    saveRecommendedBreak,
+    clearPreBreakState,
   }
 })

@@ -14,6 +14,9 @@ import SettingsPanel from '@/components/settings/SettingsPanel.vue'
 import TimerDisplay from '@/components/timer/TimerDisplay.vue'
 import TimerControls from '@/components/timer/TimerControls.vue'
 import RatingOverlay from '@/components/timer/RatingOverlay.vue'
+import BreakSuggestionOverlay from '@/components/timer/BreakSuggestionOverlay.vue'
+import ReboundBanner from '@/components/timer/ReboundBanner.vue'
+import WarmUpBanner from '@/components/timer/WarmUpBanner.vue'
 import ProductivityChart from '@/components/stats/ProductivityChart.vue'
 
 const settingsStore = useSettingsStore()
@@ -26,12 +29,19 @@ const {
   showRating,
   isManualEndSession,
   actualSessionDuration,
+  breakSuggestion,
+  reboundResult,
+  showWarmUp,
   initializeTimerTick,
   handleToggleTimer,
   handleEndSession,
   handleScore,
   handleStartBreak,
   handleSettingsChanged,
+  handleSuggestionDismiss,
+  handleSuggestionBreak,
+  handleReboundDismiss,
+  handleWarmUpDismiss,
 } = sessionManager
 
 const showSettings = ref(false)
@@ -84,6 +94,18 @@ watch(
         />
       </Transition>
 
+      <ReboundBanner
+        v-if="reboundResult"
+        :percent-change="reboundResult.percentChange"
+        :break-duration-minutes="reboundResult.breakDurationMinutes"
+        @dismiss="handleReboundDismiss"
+      />
+
+      <WarmUpBanner
+        v-if="showWarmUp"
+        @dismiss="handleWarmUpDismiss"
+      />
+
       <TimerDisplay />
       <TimerControls @toggle="handleToggleTimer" @end-session="handleEndSession" />
 
@@ -93,6 +115,16 @@ watch(
         :session-duration-minutes="actualSessionDuration"
         @score="handleScore"
         @break="handleStartBreak"
+      />
+
+      <BreakSuggestionOverlay
+        v-if="breakSuggestion"
+        :percent-decline="breakSuggestion.percentDecline"
+        :window-minutes="breakSuggestion.windowMinutes"
+        :cognitive-state="breakSuggestion.state"
+        :recommended-break-minutes="breakSuggestion.recommendedBreakMinutes"
+        @break="handleSuggestionBreak"
+        @dismiss="handleSuggestionDismiss"
       />
 
       <ProductivityChart />

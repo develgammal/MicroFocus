@@ -63,6 +63,44 @@ export const SCORE_CONSTANTS = {
   DEFAULT_BREAK_SCORE: 0,
 } as const
 
+// Cognitive Fatigue Detection (Psychology-backed defaults)
+// Based on BRAC ultradian rhythms, Vigilance Decrement research,
+// and Minimal Important Difference (MID) psychometrics.
+export const COGNITIVE_CONSTANTS = {
+  /** Rolling window size in sessions (aligned with 90-min BRAC cycle) */
+  ROLLING_WINDOW_SIZE: 3,
+  /** Steep crash slope threshold (rapid vigilance decrement) */
+  STEEP_CRASH_SLOPE: -1.5,
+  /** Exhaustion slope threshold (slow drain into distress) */
+  EXHAUSTION_SLOPE: -0.5,
+  /** Distress threshold — scores at or below indicate Yerkes-Dodson distress */
+  DISTRESS_THRESHOLD: 5,
+  /** Stagnation threshold — bottom-tier indicating total burnout */
+  STAGNATION_THRESHOLD: 4,
+  /** Warm-up slope — positive momentum indicating flow onset */
+  WARMUP_SLOPE: 0.5,
+  /** Minimum score to consider user in flow state */
+  FLOW_SCORE_MIN: 7,
+  /** Minimum slope to maintain flow state (slight dip allowed) */
+  FLOW_SLOPE_MIN: -0.4,
+  /** Auto-dismiss duration for rebound banner in ms */
+  REBOUND_BANNER_DURATION_MS: 8000,
+  /** Auto-dismiss duration for warm-up banner in ms */
+  WARMUP_BANNER_DURATION_MS: 5000,
+  /** Minimum total window duration in minutes for reliable OLS analysis */
+  MIN_WINDOW_MINUTES: 45,
+  /** Recommended break duration for steep crash (minutes) */
+  BREAK_DURATION_STEEP_CRASH: 20,
+  /** Recommended break duration for exhaustion (minutes) */
+  BREAK_DURATION_EXHAUSTION: 15,
+  /** Recommended break duration for stagnation (minutes) */
+  BREAK_DURATION_STAGNATION: 10,
+  /** Ratio of actual/recommended break below which recovery is flagged */
+  INSUFFICIENT_BREAK_RATIO: 0.7,
+  /** Extended macro-break for insufficient recovery (minutes) */
+  BREAK_DURATION_MACRO: 30,
+} as const
+
 // Validation Constraints
 export const VALIDATION_CONSTRAINTS = {
   /** Maximum length for motivational quote */

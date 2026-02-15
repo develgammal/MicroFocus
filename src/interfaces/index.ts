@@ -92,3 +92,32 @@ export interface IChartDataPoint {
   readonly label: string
   readonly value: number
 }
+
+// --- Cognitive Fatigue Detection ---
+
+export enum CognitiveState {
+  SteepCrash = 'steep-crash',
+  Exhaustion = 'exhaustion',
+  Stagnation = 'stagnation',
+  WarmUp = 'warm-up',
+  Flow = 'flow',
+  Continue = 'continue',
+  InsufficientData = 'insufficient-data',
+  InsufficientBreak = 'insufficient-break',
+}
+
+export interface IBreakSuggestion {
+  readonly state: CognitiveState
+  readonly slopePerSession: number
+  readonly percentDecline: number
+  readonly windowMinutes: number
+  readonly currentScore: number
+  readonly recommendedBreakMinutes: number | null
+}
+
+export interface IReboundResult {
+  readonly percentChange: number
+  readonly preBreakScore: number
+  readonly postBreakScore: number
+  readonly breakDurationMinutes: number
+}
